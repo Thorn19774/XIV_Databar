@@ -30,7 +30,10 @@ function MenuModule:OnInitialize()
         Pro = {text = 'Overwatch'},
         WoW = {text = CINEMATIC_NAME_1},
         DST2 = {text = 'Destiny 2'},
-        VIPR = {text = 'Call of Duty'}
+        VIPR = {text = 'Call of Duty'},
+        ODIN = {text = 'Call of Duty MW'},
+        LAZR = {text = 'Call of Duty MW2'},
+        W3 = {text = 'Warcraft 3 Reforged'}
     }
 end
 
@@ -434,7 +437,7 @@ function MenuModule:SocialHover(hoverFunc)
                 BNET_CLIENT_SC, BNET_CLIENT_DESTINY2, BNET_CLIENT_COD
             }
             for i = 1, BNGetNumFriends() do
-                --local battleID, battleName, battleTag, _, charName, gameAccount,
+                -- local battleID, battleName, battleTag, _, charName, gameAccount,
                 --      gameClient, isOnline, _, isAfk, isDnd, _, note = BNGetFriendInfo(i)
                 local accountInfo = C_BattleNet.GetFriendAccountInfo(i)
                 local gameAccountInfo = accountInfo.gameAccountInfo
@@ -454,7 +457,7 @@ function MenuModule:SocialHover(hoverFunc)
                     if not battleTag then
                         battleTag = '[' .. L['No Tag'] .. ']'
                     end
-                    
+
                     local status = FRIENDS_LIST_ONLINE
                     local statusIcon = FRIENDS_TEXTURE_ONLINE
                     local socialIcon = BNet_GetClientTexture(gameClient)
@@ -505,12 +508,11 @@ function MenuModule:SocialHover(hoverFunc)
                                 if modifierFunc() then
                                     if CanGroupWithAccount(battleID) then
                                         InviteToGroup(
-                                            charName .. "-" .. realmName) --Still working?
+                                            charName .. "-" .. realmName) -- Still working?
                                     end
                                 else
                                     ChatFrame_OpenChat(
-                                        "/o " ..
-                                            battleName .. " ")
+                                        "/o " .. battleName .. " ")
                                 end
                             elseif button == "RightButton" then
                                 if charName then
