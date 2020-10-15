@@ -354,7 +354,7 @@ function XIVBar:PrintTable(table, prefix)
 end
 
 function OffsetUI()
-    local inOrderHall = C_Garrison.IsPlayerInGarrison(LE_GARRISON_TYPE_7_0);
+    local inOrderHall = C_Garrison.IsPlayerInGarrison(7); --Enum.GarrisonType.*
 
     local offset=XIVBar.frames.bar:GetHeight();
     local buffsAreaTopOffset = offset;

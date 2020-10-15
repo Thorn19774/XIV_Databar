@@ -43,8 +43,8 @@ function TalentModule:OnInitialize()
     self.lootSpecButtons = {}
     self.classIcon = xb.constants.mediaPath .. 'spec\\' ..
                          xb.constants.playerClass
-    self.LAD = LibStub('LibArtifactData-1.0')
-    self.curArtifactId = 0
+    -- self.LAD = LibStub('LibArtifactData-1.0')
+    -- self.curArtifactId = 0
 end
 
 function TalentModule:OnEnable()
@@ -64,7 +64,7 @@ function TalentModule:OnEnable()
 
     self:CreateFrames()
     self:RegisterFrameEvents()
-    self.LAD:ForceUpdate()
+    -- self.LAD:ForceUpdate()
     self:Refresh()
 end
 
@@ -78,9 +78,9 @@ function TalentModule:OnDisable()
     self:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED')
     self:UnregisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
     self:UnregisterEvent('PLAYER_LOOT_SPEC_UPDATED')
-    self:UnregisterEvent('ARTIFACT_CLOSE')
+    -- self:UnregisterEvent('ARTIFACT_CLOSE')
     self:UnregisterEvent('UNIT_INVENTORY_CHANGED')
-    self:UnregisterEvent('ARTIFACT_XP_UPDATE')
+    -- self:UnregisterEvent('ARTIFACT_XP_UPDATE')
     self:UnregisterEvent('INSPECT_READY')
 end
 
@@ -94,8 +94,8 @@ function TalentModule:Refresh()
         return;
     end
 
-    local artifactId = self.LAD:GetActiveArtifactID() or 0
-    self.curArtifactId = artifactId
+    -- local artifactId = self.LAD:GetActiveArtifactID() or 0
+    -- self.curArtifactId = artifactId
     self.currentSpecID = GetSpecialization()
     self.currentLootSpecID = GetLootSpecialization()
 
@@ -103,7 +103,7 @@ function TalentModule:Refresh()
     local _, name, _ = GetSpecializationInfo(self.currentSpecID)
 
     local textHeight = db.text.fontSize
-    if artifactId > 0 then textHeight = floor((xb:GetHeight() - 4) / 2) end
+    -- if artifactId > 0 then textHeight = floor((xb:GetHeight() - 4) / 2) end
     self.specIcon:SetTexture(self.classIcon)
     self.specIcon:SetTexCoord(unpack(self.specCoords[self.currentSpecID]))
 
@@ -117,40 +117,38 @@ function TalentModule:Refresh()
                                db.color.inactive.b, db.color.inactive.a)
     self.specText:SetText(string.upper(name or ""))
 
-    if artifactId > 0 then
-        self.specText:SetPoint('TOPLEFT', self.specIcon, 'TOPRIGHT', 5, 0)
-    else
-        self.specText:SetPoint('LEFT', self.specIcon, 'RIGHT', 5, 0)
-    end
+    -- if artifactId > 0 then
+    --    self.specText:SetPoint('TOPLEFT', self.specIcon, 'TOPRIGHT', 5, 0)
+    -- else
+    self.specText:SetPoint('LEFT', self.specIcon, 'RIGHT', 5, 0)
+    -- end
 
     self.lootSpecButtons[0].icon:SetTexture(self.classIcon)
     self.lootSpecButtons[0].icon:SetTexCoord(
         unpack(self.specCoords[self.currentSpecID]))
 
-    if artifactId > 0 then
-        self.specBar:SetStatusBarTexture(1, 1, 1)
-        if db.modules.tradeskill.barCC then
-            self.specBar:SetStatusBarColor(xb:GetClassColors())
-        else
-            self.specBar:SetStatusBarColor(db.color.normal.r, db.color.normal.g,
-                                           db.color.normal.b, db.color.normal.a)
-        end
-        local barHeight = iconSize - textHeight - 2
-        if barHeight < 2 then barHeight = 2 end
-        self.specBar:SetSize(self.specText:GetStringWidth(), barHeight)
-        self.specBar:SetPoint('BOTTOMLEFT', self.specIcon, 'BOTTOMRIGHT', 5, 0)
+    -- if artifactId > 0 then
+    --    self.specBar:SetStatusBarTexture(1, 1, 1)
+    --    if db.modules.tradeskill.barCC then
+    --       self.specBar:SetStatusBarColor(xb:GetClassColors())
+    --    else
+    --        self.specBar:SetStatusBarColor(db.color.normal.r, db.color.normal.g,
+    --                                       db.color.normal.b, db.color.normal.a)
+    --    end
+    --    local barHeight = iconSize - textHeight - 2
+    --    if barHeight < 2 then barHeight = 2 end
+    --    self.specBar:SetSize(self.specText:GetStringWidth(), barHeight)
+    --    self.specBar:SetPoint('BOTTOMLEFT', self.specIcon, 'BOTTOMRIGHT', 5, 0)
 
-        self.specBarBg:SetAllPoints()
-        self.specBarBg:SetColorTexture(db.color.inactive.r, db.color.inactive.g,
-                                       db.color.inactive.b, db.color.inactive.a)
-        self:UpdateArtifactBar(artifactId)
-        self.specText:Show()
-        self.specBar:Show()
-    else
-        if self.specBar and self.specBar:IsVisible() then
-            self.specBar:Hide()
-        end
-    end
+    --    self.specBarBg:SetAllPoints()
+    --    self.specBarBg:SetColorTexture(db.color.inactive.r, db.color.inactive.g,
+    --                                   db.color.inactive.b, db.color.inactive.a)
+    --    self:UpdateArtifactBar(artifactId)
+    --    self.specText:Show()
+    --    self.specBar:Show()
+    -- else
+    if self.specBar and self.specBar:IsVisible() then self.specBar:Hide() end
+    -- end
     if self.specBar:IsVisible() then
         self.specFrame:SetSize(iconSize + self.specBar:GetWidth() + 5,
                                xb:GetHeight())
@@ -188,15 +186,15 @@ function TalentModule:Refresh()
     self:CreateLootSpecPopup()
 end
 
-function TalentModule:UpdateArtifactBar(artifactId)
-    local _, artifactData = self.LAD:GetArtifactInfo(artifactId)
-    if artifactData and self.specBar:IsVisible() then
-        self.specBar:SetMinMaxValues(0, artifactData.maxPower)
-        self.specBar:SetValue(artifactData.power)
-    elseif not self.specBar:IsVisible() then
-        C_Timer.After(1, function() self:Refresh() end)
-    end
-end
+-- function TalentModule:UpdateArtifactBar(artifactId)
+--    local _, artifactData = self.LAD:GetArtifactInfo(artifactId)
+--    if artifactData and self.specBar:IsVisible() then
+--        self.specBar:SetMinMaxValues(0, artifactData.maxPower)
+--        self.specBar:SetValue(artifactData.power)
+--    elseif not self.specBar:IsVisible() then
+--        C_Timer.After(1, function() self:Refresh() end)
+--    end
+-- end
 
 function TalentModule:CreateFrames()
     self.specFrame = self.specFrame or
@@ -230,14 +228,14 @@ function TalentModule:RegisterFrameEvents()
     self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'Refresh')
     self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'Refresh')
     self:RegisterEvent('PLAYER_LOOT_SPEC_UPDATED', 'Refresh')
-    self:RegisterEvent('ARTIFACT_CLOSE', 'Refresh')
+    -- self:RegisterEvent('ARTIFACT_CLOSE', 'Refresh')
     self:RegisterEvent('UNIT_INVENTORY_CHANGED', 'Refresh')
     self:RegisterEvent('INSPECT_READY', 'Refresh')
-    self.LAD:RegisterCallback('ARTIFACT_EQUIPPED_CHANGED', self.Refresh)
-    self.LAD:RegisterCallback('ARTIFACT_KNOWLEDGE_CHANGED', self.Refresh)
-    self.LAD:RegisterCallback('ARTIFACT_POWER_CHANGED', function()
-        self:UpdateArtifactBar(self.curArtifactId)
-    end)
+    -- self.LAD:RegisterCallback('ARTIFACT_EQUIPPED_CHANGED', self.Refresh)
+    -- self.LAD:RegisterCallback('ARTIFACT_KNOWLEDGE_CHANGED', self.Refresh)
+    -- self.LAD:RegisterCallback('ARTIFACT_POWER_CHANGED', function()
+    --    self:UpdateArtifactBar(self.curArtifactId)
+    -- end)
 
     self.specFrame:EnableMouse(true)
     self.specFrame:RegisterForClicks('AnyUp')
@@ -297,9 +295,9 @@ function TalentModule:RegisterFrameEvents()
 
         if button == 'RightButton' then
             if not InCombatLockdown() then
-                if self.curArtifactId > 0 then
-                    SocketInventoryItem(16)
-                end
+                -- if self.curArtifactId > 0 then
+                --    SocketInventoryItem(16)
+                -- end
             end
         end
     end)
@@ -576,45 +574,40 @@ function TalentModule:ShowTooltip()
     tooltip:AddLine("|cFFFFFF00" .. L['Current Loot Specialization'] .. "|r",
                     "|cFFFFFFFF" .. name .. "|r")
 
-    if self.curArtifactId > 0 then
-        tooltip:AddLine(" ")
-        local _, artifactData = self.LAD:GetArtifactInfo(self.curArtifactId)
-        --[[ local knowLevel, knowMult = self.LAD:GetArtifactKnowledge()
-    if knowLevel and knowLevel > 0 then
-      tooltip:AddLine("|cFFFFFF00"..L['Artifact Knowledge']..':|r', "|cFFFFFFFF"..string.format('%d (x%d)', knowLevel, ((knowMult) - 1 * 100)).."|r")
-      tooltip:AddLine(" ")
-    end--]]
-        tooltip:AddLine("|cFFFFFF00" .. ARTIFACT_POWER .. ':|r',
-                        "|cFFFFFFFF" ..
-                            string.format('%.0f / %.0f (%d%%)',
-                                          artifactData.power,
-                                          artifactData.maxPower == 0 and
-                                              artifactData.power or
-                                              artifactData.maxPower,
-                                          floor(
-                                              (artifactData.power /
-                                                  (artifactData.maxPower == 0 and
-                                                      artifactData.power or
-                                                      artifactData.maxPower)) *
-                                                  100)) .. "|r")
-        tooltip:AddLine("|cFFFFFF00" .. L['Remaining'] .. ':|r',
-                        "|cFFFFFFFF" ..
-                            string.format('%.0f (%d%%)',
-                                          artifactData.powerForNextRank,
-                                          floor(
-                                              (artifactData.powerForNextRank /
-                                                  (artifactData.maxPower == 0 and
-                                                      artifactData.power or
-                                                      artifactData.maxPower)) *
-                                                  100)) .. "|r")
-        if artifactData.numRanksPurchasable > 0 then
-            tooltip:AddLine("|cFFFFFF00" .. L['Available Ranks'] .. ':|r',
-                            "|cFFFFFFFF" ..
-                                string.format('%d',
-                                              artifactData.numRanksPurchasable) ..
-                                "|r")
-        end
-    end
+    -- if self.curArtifactId > 0 then
+    --    tooltip:AddLine(" ")
+    --    local _, artifactData = self.LAD:GetArtifactInfo(self.curArtifactId)
+    --    tooltip:AddLine("|cFFFFFF00" .. ARTIFACT_POWER .. ':|r',
+    --                   "|cFFFFFFFF" ..
+    --                        string.format('%.0f / %.0f (%d%%)',
+    --                                      artifactData.power,
+    --                                      artifactData.maxPower == 0 and
+    --                                          artifactData.power or
+    --                                          artifactData.maxPower,
+    --                                      floor(
+    --                                          (artifactData.power /
+    --                                              (artifactData.maxPower == 0 and
+    --                                                  artifactData.power or
+    --                                                  artifactData.maxPower)) *
+    --                                              100)) .. "|r")
+    --    tooltip:AddLine("|cFFFFFF00" .. L['Remaining'] .. ':|r',
+    --                    "|cFFFFFFFF" ..
+    --                        string.format('%.0f (%d%%)',
+    --                                     artifactData.powerForNextRank,
+    --                                      floor(
+    --                                          (artifactData.powerForNextRank /
+    --                                              (artifactData.maxPower == 0 and
+    --                                                  artifactData.power or
+    --                                                  artifactData.maxPower)) *
+    --                                              100)) .. "|r")
+    --    if artifactData.numRanksPurchasable > 0 then
+    --        tooltip:AddLine("|cFFFFFF00" .. L['Available Ranks'] .. ':|r',
+    --                        "|cFFFFFFFF" ..
+    --                            string.format('%d',
+    --                                          artifactData.numRanksPurchasable) ..
+    --                            "|r")
+    --    end
+    -- end
 
     tooltip:AddLine(" ")
     tooltip:AddLine('|cFFFFFF00<' .. L['Left-Click'] .. '>|r',
@@ -622,10 +615,10 @@ function TalentModule:ShowTooltip()
     tooltip:AddLine(
         '|cFFFFFF00<' .. SHIFT_KEY_TEXT .. "+" .. L['Left-Click'] .. '>|r',
         "|cFFFFFFFF" .. L['Set Loot Specialization'] .. "|r")
-    if self.curArtifactId > 0 then
-        tooltip:AddLine('|cFFFFFF00<' .. L['Right-Click'] .. '>|r',
-                        "|cFFFFFFFF" .. L['Open Artifact'] .. "|r")
-    end
+    -- if self.curArtifactId > 0 then
+    --    tooltip:AddLine('|cFFFFFF00<' .. L['Right-Click'] .. '>|r',
+    --                    "|cFFFFFFFF" .. L['Open Artifact'] .. "|r")
+    -- end
     self:SkinFrame(tooltip, "TalentTooltip")
     tooltip:Show()
 end

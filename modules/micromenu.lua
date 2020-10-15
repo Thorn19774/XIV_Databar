@@ -345,7 +345,7 @@ end
 function MenuModule:UpdateGuildText()
     if xb.db.profile.modules.microMenu.hideSocialText or
         not xb.db.profile.modules.microMenu.guild then return; end
-    GuildRoster()
+    C_GuildInfo.GuildRoster()
     if IsInGuild() then
         local _, onlineMembers = GetNumGuildMembers()
         self.text.guild:SetText(onlineMembers)
@@ -360,7 +360,7 @@ function MenuModule:UpdateFriendText()
     if xb.db.profile.modules.microMenu.hideSocialText or
         not xb.db.profile.modules.microMenu.social then return; end
     local _, bnOnlineMembers = BNGetNumFriends()
-    local _, friendsOnline = GetNumFriends()
+    local friendsOnline = C_FriendList.GetNumOnlineFriends()
     local totalFriends = bnOnlineMembers + friendsOnline
     self.text.social:SetText(totalFriends)
     self.bgTexture.social:SetPoint('CENTER', self.text.social)
@@ -421,7 +421,8 @@ function MenuModule:SocialHover(hoverFunc)
         end)
         MenuModule:SkinFrame(tooltip, "SocialToolTip")
         local totalBNFriends, totalBNOnlineFriends = BNGetNumFriends()
-        local totalFriends, totalOnlineFriends = GetNumFriends()
+        local totalFriends = C_FriendList.GetNumFriends()
+        local totalOnlineFriends = C_FriendList.GetNumOnlineFriends()
         local charNameFormat
         if (totalOnlineFriends + totalBNOnlineFriends) > 0 then
             tooltip:SmartAnchorTo(MenuModule.frames.social)
@@ -436,15 +437,27 @@ function MenuModule:SocialHover(hoverFunc)
                 BNET_CLIENT_SC, BNET_CLIENT_DESTINY2, BNET_CLIENT_COD
             }
             for i = 1, BNGetNumFriends() do
-                local battleID, battleName, battleTag, _, charName, gameAccount,
-                      gameClient, isOnline, _, isAfk, isDnd, _, note =
-                    BNGetFriendInfo(i)
+                -- local battleID, battleName, battleTag, _, charName, gameAccount,
+                --      gameClient, isOnline, _, isAfk, isDnd, _, note = BNGetFriendInfo(i)
+                local accountInfo = C_BattleNet.GetFriendAccountInfo(i)
+                local gameAccountInfo = accountInfo.gameAccountInfo
+                local battleID = accountInfo.bnetAccountID
+                local battleName = accountInfo.accountName
+                local battleTag = accountInfo.battleTag
+                local charName = gameAccountInfo.characterName
+                local gameAccount = gameAccountInfo.gameAccountID
+                local gameClient = gameAccountInfo.clientProgram
+                local isOnline = gameAccountInfo.isOnline
+                local isAfk = accountInfo.isAFK
+                local isDnd = accountInfo.isDND
+                local note = accountInfo.note
+                local realmName = gameAccountInfo.realmName
+
                 if isOnline then
                     if not battleTag then
                         battleTag = '[' .. L['No Tag'] .. ']'
                     end
 
-                    local realmName = GetRealmName(gameAccount)
                     local status = FRIENDS_LIST_ONLINE
                     local statusIcon = FRIENDS_TEXTURE_ONLINE
                     local socialIcon = BNet_GetClientTexture(gameClient)
@@ -516,9 +529,18 @@ function MenuModule:SocialHover(hoverFunc)
         end -- totalBNOnlineFriends
 
         if totalOnlineFriends then
-            for i = 1, GetNumFriends() do
-                local name, level, class, area, isOnline, status, note =
-                    GetFriendInfo(i)
+            for i = 1, C_FriendList.GetNumFriends() do
+                local friend = C_FriendList.GetFriendInfoByIndex(i)
+                local name = friend.name
+                local level = friend.level
+                local class = friend.className
+                local area = friend.area
+                local isOnline = friend.connected
+                local status = ""
+                local note = friend.notes
+                local isAfk = friend.isAfk
+                local isDnd = friend.Dnd
+
                 if isOnline then
                     local status = FRIENDS_LIST_ONLINE
                     local statusIcon = FRIENDS_TEXTURE_ONLINE
@@ -556,7 +578,7 @@ function MenuModule:SocialHover(hoverFunc)
                                 SLASH_SMART_WHISPER1 .. " " .. name .. " ")
                         elseif button == "LeftButton" then
                             if modifierFunc() then
-                                InviteUnit(name)
+                                C_PartyInfo.InviteUnit(name)
                             end
                         end
                     end)
@@ -611,7 +633,7 @@ function MenuModule:GuildHover(hoverFunc)
         end)
         MenuModule:SkinFrame(tooltip, "SocialToolTip")
 
-        GuildRoster()
+        C_GuildInfo.GuildRoster()
         tooltip:SmartAnchorTo(MenuModule.frames.guild)
         local gName, _, _, _ = GetGuildInfo('player')
         tooltip:AddHeader("[|cff6699FF" .. GUILD .. "|r]",
@@ -655,7 +677,7 @@ function MenuModule:GuildHover(hoverFunc)
                                       function(self, _, button)
                     if button == "LeftButton" then
                         if modifierFunc() then
-                            InviteUnit(name)
+                            C_PartyInfo.InviteUnit(name)
                         else
                             ChatFrame_OpenChat(
                                 SLASH_SMART_WHISPER1 .. " " .. name .. " ")
